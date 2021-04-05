@@ -15,8 +15,8 @@ public class HomeController {
         this.liveWeatherService = liveWeatherService;
     }
 
-    @GetMapping("/current-weather")
-    public CurrentWeather getCurrentWeather(Model model) {
-        return liveWeatherService.getCurrentWeather("Kharkiv","ua");
+    @GetMapping("/api/city/{cityId}/weather/current")
+    public CurrentWeather getCurrentWeather(@PathVariable(value = "cityId") long cityId, Model model) {
+        return liveWeatherService.getCurrentWeather(cityId);
     }
 }

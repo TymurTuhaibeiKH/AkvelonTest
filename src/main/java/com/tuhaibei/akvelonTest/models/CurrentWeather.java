@@ -6,24 +6,40 @@ import java.sql.Timestamp;
 
 public class CurrentWeather implements Serializable{
 
-    private String description;
+    private Long id;
+    private String name;
+    private String country;
     private BigDecimal temperature;
-    private BigDecimal feelsLike;
-    private BigDecimal windSpeed;
 
-    public CurrentWeather(String description, BigDecimal temperature, BigDecimal feelsLike, BigDecimal windSpeed) {
-        this.description = description;
+    public CurrentWeather(Long id, String name, String country, BigDecimal temperature) {
+        this.id = id;
+        this.name = name;
+        this.country = country;
         this.temperature = temperature;
-        this.feelsLike = feelsLike;
-        this.windSpeed = windSpeed;
     }
 
-    public String getDescription() {
-        return description;
+    public Long getId() {
+        return id;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
     }
 
     public BigDecimal getTemperature() {
@@ -32,21 +48,5 @@ public class CurrentWeather implements Serializable{
 
     public void setTemperature(BigDecimal temperature) {
         this.temperature = temperature;
-    }
-
-    public BigDecimal getFeelsLike() {
-        return feelsLike;
-    }
-
-    public void setFeelsLike(BigDecimal feelsLike) {
-        this.feelsLike = feelsLike;
-    }
-
-    public BigDecimal getWindSpeed() {
-        return windSpeed;
-    }
-
-    public void setWindSpeed(BigDecimal windSpeed) {
-        this.windSpeed = windSpeed;
     }
 }

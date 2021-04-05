@@ -18,7 +18,7 @@ import java.sql.Timestamp;
 @Service
 public class LiveWeatherService {
 
-    private static final String WEATHER_URL = "http://api.openweathermap.org/data/2.5/weather?q={city},{country}&APPID={key}&units=metric";
+    private static final String WEATHER_URL = "http://api.openweathermap.org/data/2.5/weather?id={city id}&appid={API key}";
 
     private static final String apiKey = "f86bb32f0e48540092c369d6ff05d21e";
     private final RestTemplate restTemplate;
@@ -29,8 +29,8 @@ public class LiveWeatherService {
         this.objectMapper = objectMapper;
     }
 
-    public CurrentWeather getCurrentWeather(String city, String country) {
-        URI url = new UriTemplate(WEATHER_URL).expand(city, country, apiKey);
+    public CurrentWeather getCurrentWeather(long city) {
+        URI url = new UriTemplate(WEATHER_URL).expand(city, apiKey);
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
 
         return convert(response);
@@ -39,10 +39,11 @@ public class LiveWeatherService {
     private CurrentWeather convert(ResponseEntity<String> response) {
         try {
             JsonNode root = objectMapper.readTree(response.getBody());
-            return new CurrentWeather(root.path("weather").get(0).path("main").asText(),
-                    BigDecimal.valueOf(root.path("main").path("temp").asDouble()),
-                    BigDecimal.valueOf(root.path("main").path("feels_like").asDouble()),
-                    BigDecimal.valueOf(root.path("wind").path("speed").asDouble()));
+            return new CurrentWeather(
+                    Long.parseLong(String.valueOf(root.path("id").asLong())),
+                    root.path("name").asText(),
+                    root.path("sys").path("country").asText(),
+                    BigDecimal.valueOf(root.path("main").path("temp").asDouble()));
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Error parsing JSON", e);
         }
