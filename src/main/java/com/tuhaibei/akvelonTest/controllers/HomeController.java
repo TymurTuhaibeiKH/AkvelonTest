@@ -2,9 +2,10 @@ package com.tuhaibei.akvelonTest.controllers;
 
 import com.tuhaibei.akvelonTest.models.CurrentWeather;
 import com.tuhaibei.akvelonTest.services.LiveWeatherService;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class HomeController {
@@ -17,6 +18,6 @@ public class HomeController {
 
     @GetMapping("/api/city/{cityId}/weather/current")
     public CurrentWeather getCurrentWeather(@PathVariable(value = "cityId") long cityId, Model model) {
-        return liveWeatherService.getCurrentWeather(cityId);
+        return liveWeatherService.strategy(cityId);
     }
 }
