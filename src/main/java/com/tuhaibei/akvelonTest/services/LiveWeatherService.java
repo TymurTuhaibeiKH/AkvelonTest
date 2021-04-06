@@ -30,23 +30,18 @@ public class LiveWeatherService {
         this.objectMapper = objectMapper;
     }
 
-    public CurrentWeather strategy(long city) {
+    public CurrentWeather currentWeather(long city) {
+        URI url = new UriTemplate(Constant.WEATHER_URL).expand(city, Constant.API_KEY);
+        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
         if (currentWeatherRepository.existsById(city)) {
             CurrentWeather currentWeather = currentWeatherRepository.findById(city).orElseThrow();
             currentWeather.setLastUpdate(new Timestamp(System.currentTimeMillis()));
-            currentWeather.setTemperature(updateTemp(city));
+            currentWeather.setTemperature(updateTemp(response));
             currentWeatherRepository.save(currentWeather);
         } else {
-            currentWeather(city);
+            convert(response);
         }
-        return currentWeatherRepository.findById(city).orElseThrow();
-    }
-
-    private void currentWeather(long city) {
-        URI url = new UriTemplate(Constant.WEATHER_URL).expand(city, Constant.API_KEY);
-        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-
-        convert(response);
+           return currentWeatherRepository.findById(city).orElseThrow();
     }
 
     private void convert(ResponseEntity<String> response) {
@@ -63,9 +58,7 @@ public class LiveWeatherService {
         }
     }
 
-    private BigDecimal updateTemp(long city){
-        URI url = new UriTemplate(Constant.WEATHER_URL).expand(city, Constant.API_KEY);
-        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+    private BigDecimal updateTemp(ResponseEntity<String> response){
         try {
         JsonNode root = objectMapper.readTree(response.getBody());
         return BigDecimal.valueOf(root.path("main").path("temp").asDouble());

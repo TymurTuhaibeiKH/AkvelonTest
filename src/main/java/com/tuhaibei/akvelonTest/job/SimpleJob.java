@@ -15,6 +15,6 @@ public class SimpleJob implements Job{
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) {
-        currentWeatherRepository.findAll().forEach(x -> liveWeatherService.strategy(x.getId()));
+        currentWeatherRepository.findAll().forEach(x -> liveWeatherService.currentWeather(x.getId()));
     }
 }

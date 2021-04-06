@@ -18,6 +18,6 @@ public class HomeController {
 
     @GetMapping("/api/city/{cityId}/weather/current")
     public CurrentWeather getCurrentWeather(@PathVariable(value = "cityId") long cityId, Model model) {
-        return liveWeatherService.strategy(cityId);
+        return liveWeatherService.currentWeather(cityId);
     }
 }
