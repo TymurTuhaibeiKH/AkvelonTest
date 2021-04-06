@@ -26,6 +26,10 @@ public class CurrentWeather implements Serializable {
         this.lastUpdate = lastUpdate;
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public String getName() {
         return name;
     }

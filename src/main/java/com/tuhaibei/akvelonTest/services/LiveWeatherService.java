@@ -3,6 +3,7 @@ package com.tuhaibei.akvelonTest.services;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tuhaibei.akvelonTest.constant.Constant;
 import com.tuhaibei.akvelonTest.models.CurrentWeather;
 import com.tuhaibei.akvelonTest.repo.CurrentWeatherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +19,6 @@ import java.sql.Timestamp;
 
 @Service
 public class LiveWeatherService {
-
-    private static final String WEATHER_URL = "http://api.openweathermap.org/data/2.5/weather?id={city id}&appid={API key}";
-
-    private static final String apiKey = "f86bb32f0e48540092c369d6ff05d21e";
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
 
@@ -37,6 +34,7 @@ public class LiveWeatherService {
         if (currentWeatherRepository.existsById(city)) {
             CurrentWeather currentWeather = currentWeatherRepository.findById(city).orElseThrow();
             currentWeather.setLastUpdate(new Timestamp(System.currentTimeMillis()));
+            currentWeather.setTemperature(updateTemp(city));
             currentWeatherRepository.save(currentWeather);
         } else {
             currentWeather(city);
@@ -45,7 +43,7 @@ public class LiveWeatherService {
     }
 
     private void currentWeather(long city) {
-        URI url = new UriTemplate(WEATHER_URL).expand(city, apiKey);
+        URI url = new UriTemplate(Constant.WEATHER_URL).expand(city, Constant.API_KEY);
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
 
         convert(response);
@@ -60,6 +58,17 @@ public class LiveWeatherService {
                     root.path("sys").path("country").asText(),
                     BigDecimal.valueOf(root.path("main").path("temp").asDouble()),
                     new Timestamp(System.currentTimeMillis())));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Error parsing JSON", e);
+        }
+    }
+
+    private BigDecimal updateTemp(long city){
+        URI url = new UriTemplate(Constant.WEATHER_URL).expand(city, Constant.API_KEY);
+        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+        try {
+        JsonNode root = objectMapper.readTree(response.getBody());
+        return BigDecimal.valueOf(root.path("main").path("temp").asDouble());
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Error parsing JSON", e);
         }
